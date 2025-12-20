@@ -11,7 +11,10 @@ class Cell {
   }
 
   getAttacked() {
+    if (this.#isAttacked) return;
+
     this.#isAttacked = true;
+    this.ship?.hit();
   }
 }
 
