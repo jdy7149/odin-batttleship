@@ -15,8 +15,7 @@ class Cell {
     return this.#isAttacked;
   }
 
-  
-  getAttacked() {
+  attack() {
     if (this.#isAttacked) return;
     
     this.#isAttacked = true;
@@ -27,7 +26,7 @@ class Cell {
     return this.#isOccupied;
   }
 
-  becomesOccupied() {
+  occupy() {
     this.#isOccupied = true;
   }
   
