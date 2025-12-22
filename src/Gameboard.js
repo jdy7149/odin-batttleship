@@ -1,11 +1,11 @@
-import Cell from "./Cell";
+import Cell from './Cell';
 
 class Gameboard {
   #board;
-  
+
   constructor() {
-    this.#board = Array.from({ length: 10 }, () => 
-      Array.from({ length: 10 }, () => new Cell())
+    this.#board = Array.from({ length: 10 }, () =>
+      Array.from({ length: 10 }, () => new Cell()),
     );
   }
 
@@ -18,8 +18,6 @@ class Gameboard {
   getCellAt(x, y) {
     return this.#board[x][y];
   }
-
 }
 
 export default Gameboard;
-

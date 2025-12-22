@@ -1,6 +1,6 @@
 class Cell {
   #ship;
-  
+
   #isAttacked;
 
   #isOccupied;
@@ -17,11 +17,11 @@ class Cell {
 
   attack() {
     if (this.#isAttacked) return;
-    
+
     this.#isAttacked = true;
     this.#ship?.hit();
   }
-  
+
   isOccupied() {
     return this.#isOccupied;
   }
@@ -29,17 +29,16 @@ class Cell {
   occupy() {
     this.#isOccupied = true;
   }
-  
+
   getShip() {
     return this.#ship;
   }
-  
+
   setShip(ship) {
     if (!this.#ship) {
       this.#ship = ship;
     }
   }
-
 }
 
 export default Cell;

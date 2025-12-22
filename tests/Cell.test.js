@@ -14,8 +14,8 @@ describe('Cell', () => {
 
     cell.getAttacked();
 
-    expect(cell.isAttacked()).toBe(true)
-  });   
+    expect(cell.isAttacked()).toBe(true);
+  });
 
   test('hits ship once only if ship exists', () => {
     const cell = new Cell();
