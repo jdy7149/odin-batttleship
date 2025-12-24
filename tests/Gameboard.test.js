@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 
 import Ship from '../src/Ship';
-import AXIS from '../src/Axis';
+import AXIS from '../src/AXIS';
 import Gameboard from '../src/Gameboard';
 
 describe('Gameboard', () => {
