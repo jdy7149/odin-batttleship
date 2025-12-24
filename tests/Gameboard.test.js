@@ -131,6 +131,21 @@ describe('Gameboard', () => {
       }
     });
 
+    test('cannot place ship out of bound', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /out of bound/i;
+
+      expect(() => gameboard.placeShip(0, 8, AXIS.HORIZONTAL, 3)).toThrow(
+        errMsg,
+      );
+      expect(() => gameboard.placeShip(4, 9, AXIS.HORIZONTAL, 2)).toThrow(
+        errMsg,
+      );
+
+      expect(() => gameboard.placeShip(8, 0, AXIS.VERTICAL, 3)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(9, 4, AXIS.VERTICAL, 2)).toThrow(errMsg);
+    });
+
     test('cannot place ship at occupied cell', () => {
       const gameboard = new Gameboard();
       const errMsg = /occupied/i;
