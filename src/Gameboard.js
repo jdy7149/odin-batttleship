@@ -1,5 +1,6 @@
 import AXIS from './AXIS';
 import Cell from './Cell';
+import Ship from './Ship';
 
 class Gameboard {
   #board;
@@ -29,7 +30,58 @@ class Gameboard {
       throw Error('Invalid length. The length should be between 1 and 4.');
     }
 
-    
+    const ship = new Ship(length);
+
+    if (axis === AXIS.HORIZONTAL) {
+      if (y + length >= 10) {
+        throw Error('Could not place a ship out of the gameboard.');
+      }
+
+      for (let i = y; i < y + length; i++) {
+        const cell = this.#board[x][i];
+        if (cell.isOccupied()) {
+          throw Error('Could not place a ship at already occupied cell.');
+        }
+
+        cell.setShip(ship);
+      }
+
+      for (let i = x - 1; i <= x + 1; i++) {
+        for (let j = y - 1; j <= y + length; j++) {
+          const isValidRow = i >= 0 && i < 10;
+          const isValidCol = j >= 0 && j < 10;
+
+          if (isValidRow && isValidCol) {
+            this.#board[i][j].occupy();
+          }
+        }
+      }
+    } else if (axis === AXIS.VERTICAL) {
+      if (x + length >= 10) {
+        throw Error('Could not place a ship out of the gameboard.');
+      }
+
+      for (let i = x; i < x + length; i++) {
+        const cell = this.#board[i][y];
+
+        if (cell.isOccupied()) {
+          throw Error('Could not place a ship at already occupied cell.');
+        }
+
+        cell.setShip(ship);
+      }
+
+      for (let i = x - 1; i <= x + length; i++) {
+        for (let j = y - 1; j <= y + 1; j++) {
+          const isValidRow = i >= 0 && i < 10;
+          const isValidCol = j >= 0 && j < 10;
+
+          if (isValidRow && isValidCol) {
+            this.#board[i][j].occupy();
+          }
+        }
+      }
+    }
   }
 }
 
