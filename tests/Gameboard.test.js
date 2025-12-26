@@ -67,10 +67,19 @@ describe('Gameboard', () => {
       const ship = gameboard.getCellAt(1, 1).getShip();
       expect(ship).toBeInstanceOf(Ship);
 
-      for (let i = 1; i <= 4; i++) {
-        const cell = gameboard.getCellAt(1, i);
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          const cell = gameboard.getCellAt(i, j);
+          
+          const isPlacedRow = i === 1;
+          const isPlacedCol = j >= 1 && j <= 4;
 
-        expect(cell.getShip()).toBe(ship);
+          if (isPlacedRow && isPlacedCol) {
+            expect(cell.getShip()).toBe(ship);
+          } else {
+            expect(cell.getShip()).toBeNull();
+          }
+        }
       }
     });
 
@@ -82,10 +91,19 @@ describe('Gameboard', () => {
       const ship = gameboard.getCellAt(1, 1).getShip();
       expect(ship).toBeInstanceOf(Ship);
 
-      for (let i = 1; i <= 4; i++) {
-        const cell = gameboard.getCellAt(i, 1);
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          const cell = gameboard.getCellAt(i, j);
+          
+          const isPlacedRow = i >= 1 && i <= 4;
+          const isPlacedCol = j === 1;
 
-        expect(cell.getShip()).toBe(ship);
+          if (isPlacedRow && isPlacedCol) {
+            expect(cell.getShip()).toBe(ship);
+          } else {
+            expect(cell.getShip()).toBeNull();
+          }
+        }
       }
     });
 
