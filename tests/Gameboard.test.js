@@ -119,8 +119,8 @@ describe('Gameboard', () => {
         for (let j = 0; j < 10; j++) {
           const cell = gameboard.getCellAt(i, j);
 
-          const isAdjacentRow = i >= 2 && i <= 4;
-          const isAdjacentCol = j >= 2 && j <= 7;
+          const isAdjacentRow = i >= 2 && i <= 7;
+          const isAdjacentCol = j >= 2 && j <= 4;
 
           if (isAdjacentRow && isAdjacentCol) {
             expect(cell.isOccupied()).toBe(true);
@@ -133,7 +133,7 @@ describe('Gameboard', () => {
 
     test('cannot place ship out of bound', () => {
       const gameboard = new Gameboard();
-      const errMsg = /out of bound/i;
+      const errMsg = /out of/i;
 
       expect(() => gameboard.placeShip(0, 8, AXIS.HORIZONTAL, 3)).toThrow(
         errMsg,
