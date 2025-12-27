@@ -15,6 +15,10 @@ class Gameboard {
   }
 
   receiveAttack(x, y) {
+    if (!(x >= 0 && x < 10) || !(y >= 0 && y < 10)) {
+      throw Error('Invalid coordinate.');
+    }
+
     const cell = this.#board[x][y];
 
     cell.attack();
@@ -37,8 +41,6 @@ class Gameboard {
       throw Error('Invalid length. The length should be between 1 and 4.');
     }
 
-    const ship = new Ship(length);
-
     if (axis === AXIS.HORIZONTAL) {
       if (y + length > 10) {
         throw Error('Could not place a ship out of the gameboard.');
@@ -53,7 +55,9 @@ class Gameboard {
         }
       }
 
-      // Plcae ship
+      const ship = new Ship(length);
+
+      // Place ship
       for (let i = y; i < y + length; i++) {
         const cell = this.#board[x][i];
 
@@ -85,10 +89,11 @@ class Gameboard {
         }
       }
 
+      const ship = new Ship(length);
+      
       // Place ship
       for (let i = x; i < x + length; i++) {
         const cell = this.#board[i][y];
-
 
         cell.setShip(ship);
       }
