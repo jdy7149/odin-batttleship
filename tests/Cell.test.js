@@ -1,6 +1,8 @@
 import { describe, expect, test, jest } from '@jest/globals';
 
 import Cell from '../src/Cell';
+import CELL_STATUS from '../src/CELL_STATUS';
+import Ship from '../src/Ship';
 
 describe('Cell', () => {
   describe('constructor', () => {
@@ -56,5 +58,41 @@ describe('Cell', () => {
     cell.occupy();
 
     expect(cell.isOccupied()).toBe(true);
+  });
+
+  describe('getStatus', () => {
+    test('idle when not attacked yet', () => {
+      const cell = new Cell();
+
+      expect(cell.getStatus()).toBe(CELL_STATUS.IDLE);
+    });
+
+    test('missed when attacked and has no ship', () => {
+      const cell = new Cell();
+
+      cell.attack();
+
+      expect(cell.getStatus()).toBe(CELL_STATUS.MISSED);
+    });
+
+    test('hit when attacked and ship is not sunk', () => {
+      const cell = new Cell();
+
+      cell.setShip(new Ship(2));
+
+      cell.attack();
+
+      expect(cell.getStatus()).toBe(CELL_STATUS.HIT);
+    });
+
+    test('sunk when attacked and ship is sunk', () => {
+      const cell = new Cell();
+
+      cell.setShip(new Ship(1));
+
+      cell.attack();
+
+      expect(cell.getStatus()).toBe(CELL_STATUS.SUNK);
+    });
   });
 });

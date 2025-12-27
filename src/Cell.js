@@ -1,3 +1,5 @@
+import CELL_STATUS from "./CELL_STATUS";
+
 class Cell {
   #ship;
 
@@ -28,6 +30,13 @@ class Cell {
 
   occupy() {
     this.#isOccupied = true;
+  }
+
+  getStatus() {
+    if (!this.#isAttacked) return CELL_STATUS.IDLE;
+    if (!this.#ship) return CELL_STATUS.MISSED;
+    if (this.#ship.isSunk()) return CELL_STATUS.SUNK;
+    return CELL_STATUS.HIT;
   }
 
   getShip() {
