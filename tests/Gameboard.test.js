@@ -22,6 +22,18 @@ describe('Gameboard', () => {
     });
   });
 
+  describe('receiveAttack', () => {
+    test('invalid coordinate is given', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /invalid coordinate/i;
+
+      expect(() => gameboard.receiveAttack(-1, 0)).toThrow(errMsg);
+      expect(() => gameboard.receiveAttack(4, 10)).toThrow(errMsg);
+    });
+
+    
+  });
+
   describe('placeShip', () => {
     test('given invalid coordinate', () => {
       const gameboard = new Gameboard();
