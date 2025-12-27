@@ -28,8 +28,8 @@ class Gameboard {
     return this.#board[x][y];
   }
 
-  hasShip() {
-    return this.#shipCnt > 0;
+  isEliminated() {
+    return this.#shipCnt  === 0;
   }
 
   placeShip(x, y, axis, length) {
@@ -90,7 +90,7 @@ class Gameboard {
       }
 
       const ship = new Ship(length);
-      
+
       // Place ship
       for (let i = x; i < x + length; i++) {
         const cell = this.#board[i][y];
