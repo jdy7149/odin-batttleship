@@ -3,40 +3,58 @@ import { describe, expect, test, jest } from '@jest/globals';
 import Cell from '../src/Cell';
 
 describe('Cell', () => {
-  test('is not marked as attacked when created', () => {
-    const cell = new Cell();
+  describe('constructor', () => {
+    test('is not marked as attacked when created', () => {
+      const cell = new Cell();
 
-    expect(cell.isAttacked()).toBe(false);
+      expect(cell.isAttacked()).toBe(false);
+    });
+
+    test('is not marked as occupied when created', () => {
+      const cell = new Cell();
+
+      expect(cell.isOccupied()).toBe(false);
+    });
   });
 
-  test('becomes attacked after being attacked', () => {
-    const cell = new Cell();
+  describe('attack', () => {
+    test('becomes attacked after being attacked', () => {
+      const cell = new Cell();
 
-    cell.getAttacked();
+      cell.attack();
 
-    expect(cell.isAttacked()).toBe(true);
+      expect(cell.isAttacked()).toBe(true);
+    });
+
+    test('hits ship once only if ship exists', () => {
+      const cell = new Cell();
+
+      const ship = { hit: jest.fn() };
+      cell.setShip(ship);
+
+      cell.attack();
+
+      expect(ship.hit).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not hit ship when cell is already attacked before', () => {
+      const cell = new Cell();
+
+      const ship = { hit: jest.fn() };
+      cell.setShip(ship);
+
+      cell.attack();
+      cell.attack();
+
+      expect(ship.hit).toHaveBeenCalledTimes(1);
+    });
   });
 
-  test('hits ship once only if ship exists', () => {
+  describe('occupy', () => {
     const cell = new Cell();
 
-    const ship = { hit: jest.fn() };
-    cell.setShip(ship);
+    cell.occupy();
 
-    cell.getAttacked();
-
-    expect(ship.hit).toHaveBeenCalledTimes(1);
-  });
-
-  test('does not hit ship when cell is already attacked before', () => {
-    const cell = new Cell();
-
-    const ship = { hit: jest.fn() };
-    cell.setShip(ship);
-
-    cell.getAttacked();
-    cell.getAttacked();
-
-    expect(ship.hit).toHaveBeenCalledTimes(1);
+    expect(cell.isOccupied()).toBe(true);
   });
 });
