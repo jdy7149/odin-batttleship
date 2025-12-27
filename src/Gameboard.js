@@ -25,6 +25,10 @@ class Gameboard {
   }
 
   getCellAt(x, y) {
+    if (!(x >= 0 && x < 10) || !(y >= 0 && y < 10)) {
+      throw Error('Invalid coordinate.');
+    }
+
     return this.#board[x][y];
   }
 

@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, jest } from '@jest/globals';
 
 import Ship from '../src/Ship';
 import AXIS from '../src/AXIS';
@@ -31,7 +31,25 @@ describe('Gameboard', () => {
       expect(() => gameboard.receiveAttack(4, 10)).toThrow(errMsg);
     });
 
-    
+    test('attacks the cell', () => {
+      const gameboard = new Gameboard();
+      const cell = gameboard.getCellAt(1, 1);
+      const attackSpy = jest.spyOn(cell, 'attack');
+
+      gameboard.receiveAttack(1, 1);
+
+      expect(attackSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getCellAt', () => {
+    test('invalid coordinate is given', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /invalid coordinate/i;
+
+      expect(() => gameboard.getCellAt(0, -1)).toThrow(errMsg);
+      expect(() => gameboard.getCellAt(10, 3)).toThrow(errMsg);
+    });
   });
 
   describe('placeShip', () => {
@@ -82,7 +100,7 @@ describe('Gameboard', () => {
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
           const cell = gameboard.getCellAt(i, j);
-          
+
           const isPlacedRow = i === 1;
           const isPlacedCol = j >= 1 && j <= 4;
 
@@ -106,7 +124,7 @@ describe('Gameboard', () => {
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
           const cell = gameboard.getCellAt(i, j);
-          
+
           const isPlacedRow = i >= 1 && i <= 4;
           const isPlacedCol = j === 1;
 
