@@ -5,20 +5,27 @@ import Ship from './Ship';
 class Gameboard {
   #board;
 
+  #shipCnt;
+
   constructor() {
     this.#board = Array.from({ length: 10 }, () =>
       Array.from({ length: 10 }, () => new Cell()),
     );
+    this.#shipCnt = 0;
   }
 
   receiveAttack(x, y) {
     const cell = this.#board[x][y];
 
-    cell.getAttacked();
+    cell.attack();
   }
 
   getCellAt(x, y) {
     return this.#board[x][y];
+  }
+
+  hasShip() {
+    return this.#shipCnt > 0;
   }
 
   placeShip(x, y, axis, length) {
@@ -33,19 +40,27 @@ class Gameboard {
     const ship = new Ship(length);
 
     if (axis === AXIS.HORIZONTAL) {
-      if (y + length >= 10) {
+      if (y + length > 10) {
         throw Error('Could not place a ship out of the gameboard.');
       }
 
+      // Chck if cells are already occupied
       for (let i = y; i < y + length; i++) {
         const cell = this.#board[x][i];
+
         if (cell.isOccupied()) {
           throw Error('Could not place a ship at already occupied cell.');
         }
+      }
+
+      // Plcae ship
+      for (let i = y; i < y + length; i++) {
+        const cell = this.#board[x][i];
 
         cell.setShip(ship);
       }
 
+      // Mark cells and its adjacent cells as occupied
       for (let i = x - 1; i <= x + 1; i++) {
         for (let j = y - 1; j <= y + length; j++) {
           const isValidRow = i >= 0 && i < 10;
@@ -57,20 +72,28 @@ class Gameboard {
         }
       }
     } else if (axis === AXIS.VERTICAL) {
-      if (x + length >= 10) {
+      if (x + length > 10) {
         throw Error('Could not place a ship out of the gameboard.');
       }
 
+      // Check if cells are already occupied
       for (let i = x; i < x + length; i++) {
         const cell = this.#board[i][y];
 
         if (cell.isOccupied()) {
           throw Error('Could not place a ship at already occupied cell.');
         }
+      }
+
+      // Place ship
+      for (let i = x; i < x + length; i++) {
+        const cell = this.#board[i][y];
+
 
         cell.setShip(ship);
       }
 
+      // Mark cells and its adjacent cells as occupied
       for (let i = x - 1; i <= x + length; i++) {
         for (let j = y - 1; j <= y + 1; j++) {
           const isValidRow = i >= 0 && i < 10;
@@ -81,7 +104,11 @@ class Gameboard {
           }
         }
       }
+    } else {
+      throw Error('Invalid axis');
     }
+
+    this.#shipCnt += 1;
   }
 }
 
