@@ -18,10 +18,12 @@ class Cell {
   }
 
   attack() {
-    if (this.#isAttacked) return;
+    if (this.#isAttacked) return this.getStatus();
 
     this.#isAttacked = true;
     this.#ship?.hit();
+
+    return this.getStatus();
   }
 
   isOccupied() {
