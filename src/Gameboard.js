@@ -1,5 +1,6 @@
 import AXIS from './AXIS';
 import Cell from './Cell';
+import CELL_STATUS from './CELL_STATUS';
 import Ship from './Ship';
 
 class Gameboard {
@@ -21,7 +22,12 @@ class Gameboard {
 
     const cell = this.#board[x][y];
 
-    cell.attack();
+    const prevStatus = cell.getStatus();
+    const currStatus = cell.attack();
+
+    if (prevStatus !== CELL_STATUS.SUNK && currStatus === CELL_STATUS.SUNK) {
+      this.#shipCnt -= 1;
+    }
   }
 
   getCellAt(x, y) {
