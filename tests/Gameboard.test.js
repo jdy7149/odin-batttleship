@@ -52,6 +52,15 @@ describe('Gameboard', () => {
     });
   });
 
+  describe('isEliminated', () => {
+    const gameboard = new Gameboard();
+
+    gameboard.placeShip(1, 1, AXIS.HORIZONTAL, 1);
+    gameboard.receiveAttack(1, 1);
+
+    expect(gameboard.isEliminated()).toBe(true);
+  });
+
   describe('placeShip', () => {
     test('given invalid coordinate', () => {
       const gameboard = new Gameboard();
