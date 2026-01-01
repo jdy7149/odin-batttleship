@@ -31,24 +31,28 @@ describe('Cell', () => {
     test('hits ship once only if ship exists', () => {
       const cell = new Cell();
 
-      const ship = { hit: jest.fn() };
+      const ship = new Ship(3);
       cell.setShip(ship);
+
+      const hitSpy = jest.spyOn(ship, 'hit');
 
       cell.attack();
 
-      expect(ship.hit).toHaveBeenCalledTimes(1);
+      expect(hitSpy).toHaveBeenCalledTimes(1);
     });
 
     test('does not hit ship when cell is already attacked before', () => {
       const cell = new Cell();
 
-      const ship = { hit: jest.fn() };
+      const ship  = new Ship(3);
       cell.setShip(ship);
+      
+      const hitSpy = jest.spyOn(ship, 'hit');
 
       cell.attack();
       cell.attack();
 
-      expect(ship.hit).toHaveBeenCalledTimes(1);
+      expect(hitSpy).toHaveBeenCalledTimes(1);
     });
   });
 
