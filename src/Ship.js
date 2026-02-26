@@ -1,6 +1,5 @@
 class Ship {
   #length;
-
   #hits;
 
   constructor(length) {
