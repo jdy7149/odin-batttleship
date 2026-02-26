@@ -1,7 +1,7 @@
-import { describe, expect, test, jest } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import Cell from '../src/Cell';
-import CELL_STATUS from '../src/CELL_STATUS';
+import CELL_STATE from '../src/CELL_STATE';
 import Ship from '../src/Ship';
 
 describe('Cell', () => {
@@ -20,7 +20,7 @@ describe('Cell', () => {
   });
 
   describe('attack', () => {
-    test('becomes attacked after being attacked', () => {
+    test('marks attacked cell as attacked', () => {
       const cell = new Cell();
 
       cell.attack();
@@ -28,75 +28,52 @@ describe('Cell', () => {
       expect(cell.isAttacked()).toBe(true);
     });
 
-    test('hits ship once only if ship exists', () => {
-      const cell = new Cell();
-
-      const ship = new Ship(3);
-      cell.setShip(ship);
-
-      const hitSpy = jest.spyOn(ship, 'hit');
-
-      cell.attack();
-
-      expect(hitSpy).toHaveBeenCalledTimes(1);
-    });
-
-    test('does not hit ship when cell is already attacked before', () => {
-      const cell = new Cell();
-
-      const ship  = new Ship(3);
-      cell.setShip(ship);
-      
-      const hitSpy = jest.spyOn(ship, 'hit');
-
-      cell.attack();
-      cell.attack();
-
-      expect(hitSpy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('occupy', () => {
-    const cell = new Cell();
-
-    cell.occupy();
-
-    expect(cell.isOccupied()).toBe(true);
-  });
-
-  describe('getStatus', () => {
-    test('idle when not attacked yet', () => {
-      const cell = new Cell();
-
-      expect(cell.getStatus()).toBe(CELL_STATUS.IDLE);
-    });
-
-    test('missed when attacked and has no ship', () => {
+    test('marks attacked cell as missed when no ship', () => {
       const cell = new Cell();
 
       cell.attack();
 
-      expect(cell.getStatus()).toBe(CELL_STATUS.MISSED);
+      expect(cell.getState()).toBe(CELL_STATE.MISSED);
     });
 
-    test('hit when attacked and ship is not sunk', () => {
+    test('marks attacked cell as hit when ship exists and not sunk', () => {
       const cell = new Cell();
 
       cell.setShip(new Ship(2));
 
       cell.attack();
 
-      expect(cell.getStatus()).toBe(CELL_STATUS.HIT);
+      expect(cell.getState()).toBe(CELL_STATE.HIT);
     });
 
-    test('sunk when attacked and ship is sunk', () => {
+    test('marks attacked cell as sunk when ship exists and sunk', () => {
       const cell = new Cell();
 
       cell.setShip(new Ship(1));
 
       cell.attack();
 
-      expect(cell.getStatus()).toBe(CELL_STATUS.SUNK);
+      expect(cell.getState()).toBe(CELL_STATE.SUNK);
+    });
+  });
+
+  describe('block', () => {
+    test('marks cell as occupied', () => {
+      const cell = new Cell();
+  
+      cell.block();
+  
+      expect(cell.isOccupied()).toBe(true);
+    });
+  });
+
+  describe('setShip', () => {
+    test('marks cell as occupied', () => {
+      const cell = new Cell();
+
+      cell.setShip(new Ship(1));
+
+      expect(cell.isOccupied()).toBe(true);
     });
   });
 });

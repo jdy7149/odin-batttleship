@@ -1,44 +1,47 @@
-import CELL_STATUS from "./CELL_STATUS";
+import CELL_STATE from "./CELL_STATE";
 
 class Cell {
   #ship;
-
-  #isAttacked;
-
-  #isOccupied;
+  #state;
+  #isBlocked;
 
   constructor() {
     this.#ship = null;
-    this.#isAttacked = false;
-    this.#isOccupied = false;
-  }
-
-  isAttacked() {
-    return this.#isAttacked;
+    this.#state = CELL_STATE.IDLE;
+    this.#isBlocked = false;
   }
 
   attack() {
-    if (this.#isAttacked) return this.getStatus();
+    if (this.#state !== CELL_STATE.IDLE) return;
 
-    this.#isAttacked = true;
-    this.#ship?.hit();
+    if (!this.#ship) {
+      this.#state = CELL_STATE.MISSED;
+      return;
+    } 
+    
+    this.#ship.hit();
+    
+    if (!this.#ship.isSunk()) {
+      this.#state = CELL_STATE.HIT;
+    } else {
+      this.#state = CELL_STATE.SUNK;
+    }
+  }
 
-    return this.getStatus();
+  block() {
+    this.#isBlocked = true;
+  }
+
+  isAttacked() {
+    return this.#state !== CELL_STATE.IDLE;
   }
 
   isOccupied() {
-    return this.#isOccupied;
+    return !!this.#ship || this.#isBlocked;
   }
 
-  occupy() {
-    this.#isOccupied = true;
-  }
-
-  getStatus() {
-    if (!this.#isAttacked) return CELL_STATUS.IDLE;
-    if (!this.#ship) return CELL_STATUS.MISSED;
-    if (this.#ship.isSunk()) return CELL_STATUS.SUNK;
-    return CELL_STATUS.HIT;
+  getState() {
+    return this.#state;
   }
 
   getShip() {
