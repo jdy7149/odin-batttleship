@@ -1,8 +1,9 @@
-import { describe, expect, test, jest } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import Ship from '../src/Ship';
 import AXIS from '../src/AXIS';
 import Gameboard from '../src/Gameboard';
+import CELL_STATE from '../src/CELL_STATE';
 
 describe('Gameboard', () => {
   describe('constructor', () => {
@@ -19,92 +20,79 @@ describe('Gameboard', () => {
           expect(cell.isOccupied()).toBe(false);
         }
       }
+
+      expect(gameboard.isEliminated()).toBe(true);
     });
-  });
-
-  describe('receiveAttack', () => {
-    test('invalid coordinate is given', () => {
-      const gameboard = new Gameboard();
-      const errMsg = /invalid coordinate/i;
-
-      expect(() => gameboard.receiveAttack(-1, 0)).toThrow(errMsg);
-      expect(() => gameboard.receiveAttack(4, 10)).toThrow(errMsg);
-    });
-
-    test('attacks the cell', () => {
-      const gameboard = new Gameboard();
-      const cell = gameboard.getCellAt(1, 1);
-      const attackSpy = jest.spyOn(cell, 'attack');
-
-      gameboard.receiveAttack(1, 1);
-
-      expect(attackSpy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('getCellAt', () => {
-    test('invalid coordinate is given', () => {
-      const gameboard = new Gameboard();
-      const errMsg = /invalid coordinate/i;
-
-      expect(() => gameboard.getCellAt(0, -1)).toThrow(errMsg);
-      expect(() => gameboard.getCellAt(10, 3)).toThrow(errMsg);
-    });
-  });
-
-  describe('isEliminated', () => {
-    const gameboard = new Gameboard();
-
-    gameboard.placeShip(1, 1, AXIS.HORIZONTAL, 1);
-    gameboard.receiveAttack(1, 1);
-
-    expect(gameboard.isEliminated()).toBe(true);
   });
 
   describe('placeShip', () => {
-    test('given invalid coordinate', () => {
+    test('throws error when given argument which is less than 0 or greater than 9', () => {
       const gameboard = new Gameboard();
       const errMsg = /Invalid coordinate/i;
 
-      expect(() => gameboard.placeShip(-1, -1, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(-1, 0, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(0, -1, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(10, 10, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(10, 9, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(9, 10, AXIS.HORIZONTAL, 1)).toThrow(
-        errMsg,
-      );
+      expect(() => gameboard.placeShip(1, 1, -1, 3)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(-1, 0, 1, 1)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(1, 1, 8, 10)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(9, 10, 1, 1)).toThrow(errMsg);
     });
 
-    test('given invalid length', () => {
+    test('throws error when start point is greater than end point', () => {
       const gameboard = new Gameboard();
-      const errMsg = /Invalid length/i;
+      const errMsg = /less/;
 
-      expect(() => gameboard.placeShip(0, 0, AXIS.HORIZONTAL, -1)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(0, 0, AXIS.HORIZONTAL, 5)).toThrow(
-        errMsg,
-      );
+      expect(() => gameboard.placeShip(2, 1, 1, 1)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(5, 4, 2, 2)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(2, 2, 6, 3)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(3, 3, 8, 7)).toThrow(errMsg);
+    });
+
+    test('throws error when both diffs are greater than 0', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /either/i;
+
+      expect(() => gameboard.placeShip(1, 2, 3, 4)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(3, 5, 2, 3)).toThrow(errMsg);
+    });
+
+    test('throws error when diff is greater than 4', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /length/i;
+
+      expect(() => gameboard.placeShip(1, 1, 1, 5)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(4, 9, 2, 2)).toThrow(errMsg);
+    });
+
+    test('cannot place ship at occupied cell', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /occupied/i;
+
+      gameboard.placeShip(4, 4, 1, 4);
+
+      expect(() => gameboard.placeShip(2, 5, 2, 2)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(4, 4, 3, 5)).toThrow(errMsg);
+      expect(() => gameboard.placeShip(3, 6, 3, 3)).toThrow(errMsg);
+    });
+
+    test('places ship', () => {
+      const gameboard = new Gameboard();
+
+      gameboard.placeShip(1, 1, 1, 4);
+
+      for (let i = 1; i <= 4; i++) {
+        const cell = gameboard.getCellAt(1, i);
+
+        const ship = cell.getShip();
+
+        expect(ship).toBeInstanceOf(Ship);
+        expect(ship.getLength()).toBe(4);
+        expect(ship.isSunk()).toBe(false);
+      }
     });
 
     test('places ship horizontally on correct cells only', () => {
       const gameboard = new Gameboard();
 
-      gameboard.placeShip(1, 1, AXIS.HORIZONTAL, 4);
-
-      const ship = gameboard.getCellAt(1, 1).getShip();
-      expect(ship).toBeInstanceOf(Ship);
+      gameboard.placeShip(1, 1, 1, 4);
 
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
@@ -114,7 +102,7 @@ describe('Gameboard', () => {
           const isPlacedCol = j >= 1 && j <= 4;
 
           if (isPlacedRow && isPlacedCol) {
-            expect(cell.getShip()).toBe(ship);
+            expect(cell.getShip()).not.toBeNull();
           } else {
             expect(cell.getShip()).toBeNull();
           }
@@ -125,10 +113,7 @@ describe('Gameboard', () => {
     test('places ship vertically on correct cells only', () => {
       const gameboard = new Gameboard();
 
-      gameboard.placeShip(1, 1, AXIS.VERTICAL, 4);
-
-      const ship = gameboard.getCellAt(1, 1).getShip();
-      expect(ship).toBeInstanceOf(Ship);
+      gameboard.placeShip(1, 4, 1, 1);
 
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
@@ -138,7 +123,7 @@ describe('Gameboard', () => {
           const isPlacedCol = j === 1;
 
           if (isPlacedRow && isPlacedCol) {
-            expect(cell.getShip()).toBe(ship);
+            expect(cell.getShip()).not.toBeNull();
           } else {
             expect(cell.getShip()).toBeNull();
           }
@@ -149,7 +134,7 @@ describe('Gameboard', () => {
     test('marks all adjacent cells as occupied (horizontally)', () => {
       const gameboard = new Gameboard();
 
-      gameboard.placeShip(1, 1, AXIS.HORIZONTAL, 4);
+      gameboard.placeShip(1, 1, 1, 4);
 
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
@@ -170,7 +155,7 @@ describe('Gameboard', () => {
     test('marks all adjacent cells as occupied (vertically)', () => {
       const gameboard = new Gameboard();
 
-      gameboard.placeShip(3, 3, AXIS.VERTICAL, 4);
+      gameboard.placeShip(3, 6, 3, 3);
 
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
@@ -187,33 +172,57 @@ describe('Gameboard', () => {
         }
       }
     });
+  });
 
-    test('cannot place ship out of bound', () => {
+  describe('receiveAttack', () => {
+    test('invalid coordinate is given', () => {
       const gameboard = new Gameboard();
-      const errMsg = /out of/i;
+      const errMsg = /invalid coordinate/i;
 
-      expect(() => gameboard.placeShip(0, 8, AXIS.HORIZONTAL, 3)).toThrow(
-        errMsg,
-      );
-      expect(() => gameboard.placeShip(4, 9, AXIS.HORIZONTAL, 2)).toThrow(
-        errMsg,
-      );
-
-      expect(() => gameboard.placeShip(8, 0, AXIS.VERTICAL, 3)).toThrow(errMsg);
-      expect(() => gameboard.placeShip(9, 4, AXIS.VERTICAL, 2)).toThrow(errMsg);
+      expect(() => gameboard.receiveAttack(-1, 0)).toThrow(errMsg);
+      expect(() => gameboard.receiveAttack(4, 10)).toThrow(errMsg);
     });
 
-    test('cannot place ship at occupied cell', () => {
+    test('throw error when attacking cell which is already attacked before', () => {
       const gameboard = new Gameboard();
-      const errMsg = /occupied/i;
 
-      gameboard.placeShip(4, 4, AXIS.HORIZONTAL, 1);
+      const errMsg = /attacked/i;
 
-      expect(() => gameboard.placeShip(4, 4, AXIS.VERTICAL, 3)).toThrow(errMsg);
-      expect(() => gameboard.placeShip(2, 3, AXIS.VERTICAL, 2)).toThrow(errMsg);
-      expect(() => gameboard.placeShip(5, 2, AXIS.HORIZONTAL, 2)).toThrow(
-        errMsg,
-      );
+      gameboard.receiveAttack(1, 1);
+
+      expect(() => gameboard.receiveAttack(1, 1)).toThrow(errMsg);
+    });
+
+    test('missed when there is no ship', () => {
+      const gameboard = new Gameboard();
+
+      expect(gameboard.receiveAttack(1, 1)).toBe(CELL_STATE.MISSED);
+    });
+
+    test('hit when ship is hit but not sunk', () => {
+      const gameboard = new Gameboard();
+
+      gameboard.placeShip(1, 2, 1, 1);
+
+      expect(gameboard.receiveAttack(1, 1)).toBe(CELL_STATE.HIT);
+    });
+
+    test('sunk when ship is sunk', () => {
+      const gameboard = new Gameboard();
+
+      gameboard.placeShip(1, 1, 1, 1);
+
+      expect(gameboard.receiveAttack(1, 1)).toBe(CELL_STATE.SUNK);
+    });
+  });
+
+  describe('getCellAt', () => {
+    test('invalid coordinate is given', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /invalid coordinate/i;
+
+      expect(() => gameboard.getCellAt(0, -1)).toThrow(errMsg);
+      expect(() => gameboard.getCellAt(10, 3)).toThrow(errMsg);
     });
   });
 });
