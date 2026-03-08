@@ -1,4 +1,4 @@
-import CELL_STATE from "./CELL_STATE";
+import CELL_STATE from './CELL_STATE';
 
 class Cell {
   #ship;
@@ -17,10 +17,10 @@ class Cell {
     if (!this.#ship) {
       this.#state = CELL_STATE.MISSED;
       return;
-    } 
-    
+    }
+
     this.#ship.hit();
-    
+
     if (!this.#ship.isSunk()) {
       this.#state = CELL_STATE.HIT;
     } else {

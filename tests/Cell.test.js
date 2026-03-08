@@ -60,9 +60,9 @@ describe('Cell', () => {
   describe('block', () => {
     test('marks cell as occupied', () => {
       const cell = new Cell();
-  
+
       cell.block();
-  
+
       expect(cell.isOccupied()).toBe(true);
     });
   });
