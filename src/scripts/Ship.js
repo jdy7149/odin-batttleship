@@ -1,0 +1,25 @@
+class Ship {
+  #length;
+  #hits;
+
+  constructor(length) {
+    this.#length = length;
+    this.#hits = 0;
+  }
+
+  hit() {
+    if (this.#hits < this.#length) {
+      this.#hits += 1;
+    }
+  }
+
+  isSunk() {
+    return this.#hits === this.#length;
+  }
+
+  getLength() {
+    return this.#length;
+  }
+}
+
+export default Ship;
