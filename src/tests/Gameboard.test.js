@@ -44,6 +44,15 @@ describe('Gameboard', () => {
       );
     });
 
+    test('throws error when given wrong direction', () => {
+      const gameboard = new Gameboard();
+      const errMsg = /wrong direction/i;
+
+      expect(() => gameboard.placeShip(3, 3, '')).toThrow(errMsg);
+      expect(() => gameboard.placeShip(4, 5, 'up')).toThrow(errMsg);
+      expect(() => gameboard.placeShip(1, 1, 'diagonal')).toThrow(errMsg);
+    });
+
     test('throws error when length is less than 1 or greater than 4', () => {
       const gameboard = new Gameboard();
       const errMsg = /length/i;
