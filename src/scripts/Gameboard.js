@@ -1,6 +1,8 @@
+import AXIS from './AXIS';
 import Cell from './Cell';
-import CELL_STATE from './CELL_STATE';
 import Ship from './Ship';
+
+import { isValidCoordinate } from './helper';
 
 class Gameboard {
   #board;
@@ -13,59 +15,51 @@ class Gameboard {
     this.#ships = [];
   }
 
-  placeShip(startRow, endRow, startCol, endCol) {
-    if (
-      !this.#isValidCoordinate(startRow) ||
-      !this.#isValidCoordinate(endRow) ||
-      !this.#isValidCoordinate(startCol) ||
-      !this.#isValidCoordinate(endCol)
-    ) {
+  placeShip(x, y, axis, length) {
+    if (!isValidCoordinate(x) || !isValidCoordinate(y)) {
       throw Error('Invalid coordinate. It should be between 0 and 9');
     }
 
-    if (startRow > endRow || startCol > endCol) {
-      throw Error('Start point should be less than end point.');
+    if (!Object.values(AXIS).includes(axis)) {
+      throw Error(
+        'Wrong direction. Direction should be horizontal or vertical.',
+      );
     }
 
-    if (endRow - startRow > 0 && endCol - startCol > 0) {
-      throw Error('Ship should be placed either horizontally or vertically.');
-    }
-
-    const length = Math.max(endRow - startRow + 1, endCol - startCol + 1);
-
-    if (length > 4) {
-      throw Error('Max length of ship is 4.');
+    if (length < 1 || length > 4) {
+      throw Error('Length of ship should be between 1 and 4.');
     }
 
     const ship = new Ship(length);
 
+    const dx = axis === AXIS.HORIZONTAL ? 1 : 0;
+    const dy = axis === AXIS.VERTICAL ? 1 : 0;
+
     // Gather coordinates where ship will be placed
     const placedCoords = [];
 
-    for (let i = startRow; i <= endRow; i++) {
-      for (let j = startCol; j <= endCol; j++) {
-        const cell = this.#board[i][j];
+    for (let i = 0; i < length; i++) {
+      const cell = this.#board[x + dy * i][y + dx * i];
 
-        if (cell.isOccupied()) throw Error('Cells are already occupied.');
+      if (cell.isOccupied()) throw Error('Cells are already occupied.');
 
-        placedCoords.push([i, j]);
-      }
+      placedCoords.push([x + dy * i, y + dx * i]);
     }
 
     // Place ship
-    placedCoords.forEach(([x, y]) => this.#board[x][y].setShip(ship));
+    placedCoords.forEach(([a, b]) => this.#board[a][b].setShip(ship));
 
     // Gather coordinates which will be blocked
     const blockedCoords = [];
 
-    for (let i = startRow - 1; i <= endRow + 1; i++) {
-      for (let j = startCol - 1; j <= endCol + 1; j++) {
-        const isPlacedRow = i >= startRow && i <= endRow;
-        const isPlacedCol = j >= startCol && j <= endCol;
+    for (let i = x - 1; i <= x + dy * (length - 1) + 1; i++) {
+      for (let j = y - 1; j <= y + dx * (length - 1) + 1; j++) {
+        const isPlacedRow = i >= x && i <= x + dy * (length - 1);
+        const isPlacedCol = j >= y && j <= y + dx * (length - 1);
 
         if (
-          !this.#isValidCoordinate(i) ||
-          !this.#isValidCoordinate(j) ||
+          !isValidCoordinate(i) ||
+          !isValidCoordinate(j) ||
           (isPlacedRow && isPlacedCol)
         )
           continue;
@@ -75,13 +69,13 @@ class Gameboard {
     }
 
     // Block cells
-    blockedCoords.forEach(([x, y]) => this.#board[x][y].block());
+    blockedCoords.forEach(([a, b]) => this.#board[a][b].block());
 
     this.#ships.push(ship);
   }
 
   receiveAttack(x, y) {
-    if (!this.#isValidCoordinate(x) || !this.#isValidCoordinate(y)) {
+    if (!isValidCoordinate(x) || !isValidCoordinate(y)) {
       throw Error('Invalid coordinate.');
     }
 
@@ -98,7 +92,7 @@ class Gameboard {
   }
 
   getCellAt(x, y) {
-    if (!this.#isValidCoordinate(x) || !this.#isValidCoordinate(y)) {
+    if (!isValidCoordinate(x) || !isValidCoordinate(y)) {
       throw Error('Invalid coordinate.');
     }
 
@@ -107,10 +101,6 @@ class Gameboard {
 
   isEliminated() {
     return this.#ships.every((ship) => ship.isSunk());
-  }
-
-  #isValidCoordinate(k) {
-    return k >= 0 && k < 10;
   }
 }
 
