@@ -1,12 +1,66 @@
-.container {
-  margin-top: 20px;
+/* ===== Variables ===== */
+
+:root {
+  /* Backgrounds */
+  --bg-main: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+  --board-bg: #0b2a3d;
+
+  /* Water colors */
+  --water-idle: #8ecae6;
+  --water-hover: #a8dadc;
+
+  /* Ship colors */
+  --ship-color: #457b9d;
+
+  /* Attack states */
+  --miss-color: #1d3557;
+  --hit-color: #e63946;
+  --sunk-color: #6a040f;
+
+  /* Borders */
+  --cell-border: #1d3557;
+
+  /* UI */
+  --text-color: white;
+  --button-color: #e63946;
+  --button-hover: #ff4d5a;
+
+  /* Sizes */
+  --cell-size: 34px;
+  --board-gap: 4px;
 }
+
+/* ===== Base Layout ===== */
+
+body {
+  margin: 0;
+  font-family: 'Roboto', system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.container {
+  text-align: center;
+}
+
+/* ===== Header ===== */
+
+.header h1 {
+  font-size: 42px;
+  letter-spacing: 3px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+/* ===== Boards Layout ===== */
 
 .boards {
   display: flex;
   justify-content: center;
-  gap: 60px;
-  margin-top: 30px;
+  gap: 80px;
 }
 
 .board-container {
@@ -15,33 +69,101 @@
   align-items: center;
 }
 
+.board-container h2 {
+  font-weight: 500;
+}
+
+/* ===== Game Board ===== */
+
 .board {
   display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(10, 30px);
-  gap: 2px;
-  margin-top: 10px;
+  grid-template-columns: repeat(10, var(--cell-size));
+  grid-template-rows: repeat(10, var(--cell-size));
+  gap: var(--board-gap);
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--board-bg);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
+
+/* ===== Base Cell ===== */
 
 .cell {
-  width: 30px;
-  height: 30px;
-  background-color: #cce5ff;
-  border: 1px solid #333;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border-radius: 4px;
+  background: var(--water-idle);
+  border: 1px solid var(--cell-border);
+  transition: all 0.15s ease;
 }
 
-.missed {
+/* ===== Hover for computer board ===== */
 
+.clickable:hover {
+  cursor: pointer;
+  transform: scale(1.08);
+  background: var(--water-hover);
 }
 
-.sunk {
-
-}
-
-.hit {
-
-}
+/* ===== Cell States ===== */
 
 .idle {
-  
+  background: var(--water-idle);
+}
+
+/* Miss */
+
+.missed {
+  background: var(--miss-color);
+  position: relative;
+}
+
+.missed::after {
+  content: "•";
+  color: white;
+  font-size: 22px;
+  display: block;
+  text-align: center;
+  line-height: var(--cell-size);
+}
+
+/* Hit */
+
+.hit {
+  background: var(--hit-color);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+}
+
+/* Sunk */
+
+.sunk {
+  background: var(--sunk-color);
+}
+
+/* Player ships */
+
+.has-ship {
+  background: var(--ship-color);
+}
+
+/* ===== Reset Button ===== */
+.buttons {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.reset {
+  padding: 10px 24px;
+  border: none;
+  background: var(--button-color);
+  color: var(--text-color);
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.reset:hover {
+  background: var(--button-hover);
 }
