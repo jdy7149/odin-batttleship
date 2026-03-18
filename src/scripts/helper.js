@@ -4,8 +4,8 @@ const shuffleArray = (arr) => {
 
     [this.arr[i], this.arr[randomidx]] = [this.arr[randomidx], this.arr[i]];
   }
-}
+};
 
 const isValidCoordinate = (k) => k >= 0 && k < 10;
 
-export { shuffleArray, isValidCoordinate }
+export { shuffleArray, isValidCoordinate };
