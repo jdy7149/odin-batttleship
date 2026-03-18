@@ -1,17 +1,7 @@
-# ⚡ Webpack Starter Template
+# Battle Ship
 
-### 1. Create repository using this template
+**Project:** Weather App from [The Odin Project](https://www.theodinproject.com/lessons/node-path-javascript-battleship)
 
-### 2. Clone created repository
+[🔗 Live Preview](https://jdy7149.github.io/odin-batttleship/)
 
-### 3. Inclue project-specific metadata
-
-  ```bash
-  npm init -y
-  ```
-
-### 4. Install dependencies
-
-  ```bash
-  npm install
-  ```
+---
