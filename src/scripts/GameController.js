@@ -30,6 +30,7 @@ class GameController {
 
     // Place computer's ships
     this.randomlyPlaceShips('computer');
+    this.randomlyPlaceShips('user');
   }
 
   attackComputer(x, y) {
