@@ -1,8 +1,8 @@
 const shuffleArray = (arr) => {
-  for (let i = this.arr.length - 1; i > 0; i--) {
+  for (let i = arr.length - 1; i > 0; i--) {
     const randomidx = Math.floor(Math.random() * (i + 1));
 
-    [this.arr[i], this.arr[randomidx]] = [this.arr[randomidx], this.arr[i]];
+    [arr[i], arr[randomidx]] = [arr[randomidx], arr[i]];
   }
 };
 
