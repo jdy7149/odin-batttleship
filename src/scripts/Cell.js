@@ -2,30 +2,25 @@ import CELL_STATE from './CELL_STATE';
 
 class Cell {
   #ship;
-  #state;
+  #isAttacked;
   #isBlocked;
 
   constructor() {
     this.#ship = null;
-    this.#state = CELL_STATE.IDLE;
+    this.#isAttacked = false;
     this.#isBlocked = false;
   }
 
   attack() {
-    if (this.#state !== CELL_STATE.IDLE) return;
+    if (this.#isAttacked) return;
+
+    this.#isAttacked = true;
 
     if (!this.#ship) {
-      this.#state = CELL_STATE.MISSED;
       return;
     }
 
     this.#ship.hit();
-
-    if (!this.#ship.isSunk()) {
-      this.#state = CELL_STATE.HIT;
-    } else {
-      this.#state = CELL_STATE.SUNK;
-    }
   }
 
   block() {
@@ -33,7 +28,7 @@ class Cell {
   }
 
   isAttacked() {
-    return this.#state !== CELL_STATE.IDLE;
+    return this.#isAttacked;
   }
 
   isOccupied() {
@@ -41,7 +36,19 @@ class Cell {
   }
 
   getState() {
-    return this.#state;
+    if (!this.#isAttacked) {
+      return CELL_STATE.IDLE;
+    }
+
+    if (!this.#ship) {
+      return CELL_STATE.MISSED;
+    }
+
+    if (this.#ship.isSunk()) {
+      return CELL_STATE.SUNK;
+    }
+
+    return CELL_STATE.HIT;
   }
 
   getShip() {
@@ -49,7 +56,7 @@ class Cell {
   }
 
   setShip(ship) {
-    if (!this.#ship) {
+    if (!this.isOccupied()) {
       this.#ship = ship;
     }
   }
