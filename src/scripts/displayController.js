@@ -3,21 +3,19 @@ import GameController from './GameController';
 
 let game = new GameController();
 
-let user = game.getUser();
-let com = game.getComputer();
-
-let isUserTurn = true;
+let userBoard = game.getUserBoard();
+let computerBoard = game.getComputerBoard();
 
 // Display components
-const userBoardElement = document.querySelector('#user');
-const comBoardElement = document.querySelector('#com');
+const userBoardElement = document.querySelector('#user-board');
+const comBoardElement = document.querySelector('#computer-board');
 
 // Render each player's board
 const renderUserBoard = () => {
   // Clear grid
   userBoardElement.replaceChildren();
 
-  const board = user.getGameboard();
+  const board = userBoard;
 
   // Render board
   for (let i = 0; i < 10; i++) {
@@ -28,7 +26,7 @@ const renderUserBoard = () => {
       const cellElement = document.createElement('div');
       cellElement.classList.add('cell', state);
 
-      if (cell.getShip()) {
+      if (state === CELL_STATE.IDLE && cell.getShip()) {
         cellElement.classList.add('has-ship');
       }
 
@@ -44,7 +42,7 @@ const renderComputerBoard = () => {
   // Clear grid
   comBoardElement.replaceChildren();
 
-  const board = com.getGameboard();
+  const board = computerBoard;
 
   // Render board
   for (let i = 0; i < 10; i++) {
@@ -67,61 +65,93 @@ const renderComputerBoard = () => {
   }
 };
 
-// Player attacks user on random coordinate
+// Alert the winner of game
+const alertWinner = () => {
+  const winner = game.isUserTurn() ? 'You' : 'Computer';
+
+  alert(`${winner} wins!`);
+};
+
+// Alert game has ended
+const alertEnding = () => {
+  alert('Game has ended. Please restart game.');
+};
+
+// Computer attacks user on random coordinate
 const playComputerTurn = () => {
-  let result = null;
+  if (game.isEnd()) {
+    alertEnding();
+    return;
+  }
 
-  do {
-    result = game.randomAttackUser();
+  const result = game.randomAttackUser();
 
-    renderUserBoard();
-  } while (result !== CELL_STATE.MISSED);
+  renderUserBoard();
 
-  isUserTurn = true;
+  if (game.isEnd()) {
+    alertWinner();
+    return;
+  }
+
+  if (result !== CELL_STATE.MISSED) {
+    setTimeout(playComputerTurn, 700);
+  }
 };
 
 // Click event for computer's cell
 const handleAttack = (x, y) => {
-  const comBoard = com.getGameboard();
+  const result = game.attackComputer(x, y);
 
-  if (comBoard.getCellAt(x, y).isAttacked()) {
-    return;
-  }
-
-  const result = comBoard.receiveAttack(x, y);
+  if (result === null) return;
 
   renderComputerBoard();
 
+  if (game.isEnd()) {
+    alertWinner();
+    return;
+  }
+
   if (result === CELL_STATE.MISSED) {
-    isUserTurn = false;
-    playComputerTurn();
+    setTimeout(() => {
+      playComputerTurn();
+    }, 600);
   }
 };
 
 const reset = () => {
   game = new GameController();
-  isUserTurn = true;
 
-  user = game.getUser();
-  com = game.getComputer();
+  userBoard = game.getUserBoard();
+  computerBoard = game.getComputerBoard();
 
   renderUserBoard();
   renderComputerBoard();
 };
 
-// Add click event to computer's cells
-comBoardElement.addEventListener('click', (evt) => {
-  if (!evt.target.classList.contains('cell')) return;
-
-  if (com.getGameboard().isEliminated() || !isUserTurn) return;
-
-  const x = Number(evt.target.dataset.x);
-  const y = Number(evt.target.dataset.y);
-
-  handleAttack(x, y);
-});
-
-// Add reset event
-document.querySelector('.reset').addEventListener('click', () => {
+const init = () => {
   reset();
-});
+
+  // Add click event to computer's cells
+  comBoardElement.addEventListener('click', (evt) => {
+    if (!evt.target.classList.contains('cell')) return;
+
+    if (!game.isUserTurn()) return;
+
+    if (game.isEnd()) {
+      alertEnding();
+      return;
+    }
+
+    const x = Number(evt.target.dataset.x);
+    const y = Number(evt.target.dataset.y);
+
+    handleAttack(x, y);
+  });
+
+  // Add reset event
+  document.querySelector('.reset').addEventListener('click', () => {
+    reset();
+  });
+};
+
+export default init;
